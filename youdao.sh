@@ -66,7 +66,7 @@ urlencode() {
     for (( i = 0 ; i < l ; i++ )); do
         local c=${1:i:1}
         case "$c" in
-            [,\'\\]) printf '%%%.2X' "'$c";;
+            [,\'\\\".-—\+]) printf '%%%.2X' "'$c";;
             ' ') printf + ;;
             *)  printf "$c"
         esac
@@ -88,4 +88,4 @@ function get_app_url()
 
 url=$(get_app_url $@)
 DEBUG url=$url
-curl "${url}"
+curl -s "${url}" |jq .translation[0]
