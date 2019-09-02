@@ -88,4 +88,11 @@ function get_app_url()
 
 url=$(get_app_url $@)
 DEBUG url=$url
-curl -s "${url}" |jq .translation[0]
+result=$(curl -s "${url}")
+errorCode=$(echo "${result}"|jq -r .errorCode)
+query=$(echo "${result}"|jq -r .query)
+translation=$(echo "${result}" |jq -r .translation[0])
+speakUrl=$(echo "${result}" |jq -r .speakUrl)
+template=$(cat youdao.template)
+eval "echo ${template}"
+exit ${errorCode}
