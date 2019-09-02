@@ -36,7 +36,7 @@ function get_curtime()
 function get_input()
 {
     local word="$*"
-    local len=$(printf "%s" "${word}"|wc -c)
+    local len=$(echo -n "${word}"|wc -c)
     if [[ ${len} -gt 20 ]];then
         local input="${word:0:10}${len}${word: -10}"
     else
@@ -58,7 +58,7 @@ function get_sign()
     DEBUG word=${word}
     DEBUG input=${input}
     DEBUG signstr=${signstr}
-    printf "%s" "${signstr}"|sha256sum|cut -f1 -d " "
+    echo -n "${signstr}"|sha256sum|cut -f1 -d " "
 }
 
 urlencode() {
