@@ -36,7 +36,7 @@ function get_curtime()
 function get_input()
 {
     local word="$*"
-    local len=$(echo -n "${word}"|wc -c)
+    local len=$"${#word}"
     if [[ ${len} -gt 20 ]];then
         local input="${word:0:10}${len}${word: -10}"
     else
