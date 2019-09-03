@@ -1,0 +1,37 @@
+#+TITLE: README
+#+AUTHOR: lujun9972
+#+TAGS: youdao.sh
+#+DATE: [2019-09-03 二 19:15]
+#+LANGUAGE:  zh-CN
+#+STARTUP:  inlineimages
+#+OPTIONS:  H:6 num:nil toc:t \n:nil ::t |:t ^:nil -:nil f:t *:t <:nil
+
+简单的调用有道智云文本翻译API进行翻译的脚本.
+
+* feature
++ 允许自定义显示模板
++ 允许自定义从json结果中抽取域值的filter
+
+* Usage
+1. 在 =youdao.cfg= 中配置变量名和从json结果中抽取域值的filter的对应关系
+   #+BEGIN_SRC conf
+     errorCode=.errorCode
+     query=.query
+     translation=.translation[0]
+     speakUrl=.speakUrl
+   #+END_SRC
+   
+   其中filter需要准许 =jq= 命令的filter规则
+
+2. 在 =youdao.template= 中配置显示模板,其中可以用shell格式嵌入 =youdao.cfg= 中配置好的变量
+   #+BEGIN_EXAMPLE
+     翻译结果： ${translation}
+   #+END_EXAMPLE
+
+3. 使用 =youdao.sh 翻译= 查询结果
+   #+BEGIN_SRC shell
+     ./youdao.sh hello world
+   #+END_SRC
+
+   #+RESULTS:
+   : 翻译结果： 你好，世界
