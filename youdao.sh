@@ -17,7 +17,7 @@ declare -r APP_KEY="72c03449033eb239"
 declare -r SIGN_TYPE="v3"
 
 # Youdao dictionary API template, URL `http://dict.youdao.com/'.
-declare -r APP_URL="https://openapi.youdao.com/api?q=%s&from=%s&to=%s&appKey=%s&salt=%s&sign=%s&signType=%s&curtime=%s"
+declare -r APP_URL="https://openapi.youdao.com/api"
 
 # Youdao dictionary API for query the voice of word.
 declare -r VOICE_URL="http://dict.youdao.com/dictvoice?type=2&audio=%s"
@@ -63,37 +63,30 @@ function get_sign()
     echo -n "${signstr}"|sha256sum|cut -f1 -d " "
 }
 
-urlencode() {
-    local l=${#1}
-    for (( i = 0 ; i < l ; i++ )); do
-        local c=${1:i:1}
-        case "$c" in
-            [,\'\\\".-—\+]) printf '%%%.2X' "'$c";;
-            ' ') printf + ;;
-            *)  printf "$c"
-        esac
-    done
-}
-
-function get_app_url()
+function do_search()
 {
     local word="$*"
-    local query="$(urlencode "${word}")"
-    DEBUG query=$query
     local salt="$(get_salt)"
     local curtime=$(get_curtime)
     local sign=$(get_sign "${salt}" "${curtime}" "${word}")
     DEBUG sign=${sign}
-    printf "${APP_URL}" "${query}" "${from}" "${to}" "${APP_KEY}" "${salt}" "${sign}" "${SIGN_TYPE}" "${curtime}"
+    curl -s --data-urlencode "q=${word}" \
+         --data-urlencode "from=${from}" \
+         --data-urlencode "to=${to}" \
+         --data-urlencode "appKey=${APP_KEY}" \
+         --data-urlencode "salt=${salt}" \
+         --data-urlencode "sign=${sign}" \
+         --data-urlencode "signType=${SIGN_TYPE}" \
+         --data-urlencode "curtime=${curtime}" \
+         "${APP_URL}"
     echo
 }
 
-url=$(get_app_url $@)
-result=$(curl -s "${url}")
+result=$(do_search "$@")
 . youdao.cfg
 while read field;
 do
-    eval $field=\"$(echo "${result}"|jq -r ${!field})\"
+    eval $field=\'$(echo "${result}"|jq -r ${!field})\'
 done < <(cat youdao.cfg|cut -f1 -d "=")
 template=$(cat youdao.template)
 eval "echo ${template}"
