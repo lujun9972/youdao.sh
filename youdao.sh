@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
+_DEBUG=0
 
-_DEBUG=1
+set -e
+cd $(dirname "${BASH_SOURCE[0]}")
 function DEBUG()
 {
-    [[ _DEBUG -ne 0 ]] && echo "$*" >&2
+    [[ _DEBUG -ne 0 ]] && echo DEBUG: "$*" >&2
 }
 # Youdao dictionary Secret Key. You can get it from ai.youdao.com.
 declare -r SECRET_KEY="atY68WyfGGoVE5WBc09ihdc2lxZP9sUR"
@@ -87,12 +89,12 @@ function get_app_url()
 }
 
 url=$(get_app_url $@)
-DEBUG url=$url
 result=$(curl -s "${url}")
-errorCode=$(echo "${result}"|jq -r .errorCode)
-query=$(echo "${result}"|jq -r .query)
-translation=$(echo "${result}" |jq -r .translation[0])
-speakUrl=$(echo "${result}" |jq -r .speakUrl)
+. youdao.cfg
+while read field;
+do
+    eval $field=\"$(echo "${result}"|jq -r ${!field})\"
+done < <(cat youdao.cfg|cut -f1 -d "=")
 template=$(cat youdao.template)
 eval "echo ${template}"
 exit ${errorCode}
