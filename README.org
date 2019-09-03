@@ -12,6 +12,10 @@
 + 允许自定义显示模板
 + 允许自定义从json结果中抽取域值的filter
 
+* Requirements
++ jq
++ curl
+  
 * Usage
 1. 在 =youdao.cfg= 中配置变量名和从json结果中抽取域值的filter的对应关系
    #+BEGIN_SRC conf
@@ -21,7 +25,7 @@
      speakUrl=.speakUrl
    #+END_SRC
    
-   其中filter需要准许 =jq= 命令的filter规则
+   其中filter需要遵循 =jq= 命令的filter规则
 
 2. 在 =youdao.template= 中配置显示模板,其中可以用shell格式嵌入 =youdao.cfg= 中配置好的变量
    #+BEGIN_EXAMPLE
@@ -29,9 +33,11 @@
    #+END_EXAMPLE
 
 3. 使用 =youdao.sh 翻译= 查询结果
-   #+BEGIN_SRC shell
+   #+BEGIN_SRC shell :results org
      ./youdao.sh hello world
    #+END_SRC
 
    #+RESULTS:
-   : 翻译结果： 你好，世界
+   #+BEGIN_SRC org
+   翻译结果： 你好，世界
+   #+END_SRC
